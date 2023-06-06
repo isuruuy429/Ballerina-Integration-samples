@@ -11,7 +11,6 @@ public type Patient record {|
     string lastname;
     string birthdate;
     string gender?;
-    string date_of_arrival?;
     string address_use;
     string address_type;
     string address_line;
@@ -19,10 +18,6 @@ public type Patient record {|
     string address_state;
     string address_country;
     string address_postalcode;
-    string contact_relationship_code;
-    string contact_relationship_display;
-    string contact_relationship_system;
-    string contact_relationship_phone;
 |};
 
 //Database connection configurations
