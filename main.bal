@@ -1,7 +1,14 @@
-import ballerinax/health.fhir.r4.aubase410;
+import ballerinax/mysql;
 import ballerinax/health.fhir.r4;
 import ballerina/http;
-import ballerinax/mysql;
+import ballerinax/health.fhir.r4.aubase410;
+
+//Database connection configurations
+configurable string USER = ?;
+configurable string PASSWORD = ?;
+configurable string HOST = ?;
+configurable int PORT = ?;
+configurable string DATABASE = ?;
 
 //The Patient record to interact with the database.
 public type Patient record {|
@@ -11,6 +18,7 @@ public type Patient record {|
     string lastname;
     string birthdate;
     string gender?;
+    string date_of_arrival;
     string address_use;
     string address_type;
     string address_line;
@@ -18,14 +26,11 @@ public type Patient record {|
     string address_state;
     string address_country;
     string address_postalcode;
+    string contact_relationship_code;
+    string contact_relationship_display;
+    string contact_relationship_system;
+    string contact_relationship_phone;
 |};
-
-//Database connection configurations
-configurable string USER = ?;
-configurable string PASSWORD = ?;
-configurable string HOST = ?;
-configurable int PORT = ?;
-configurable string DATABASE = ?;
 
 final mysql:Client dbClient = check new (user = USER, password = PASSWORD, host = HOST, port = PORT, database = DATABASE);
 
@@ -37,9 +42,9 @@ isolated function getPatient(string id) returns aubase410:AUBasePatient|r4:FHIRE
         r4:PatientGender? patientGender = checkGender(<string>patient.gender);
         r4:AddressUse? addressUse = checkAddressUse(<string>patient.address_use);
 
-        aubase410:AUBasePatient|r4:FHIRError? fhirPatient = implementAuPatient(patient.id, [patient.firstName], 
-        patient.lastname, <r4:PatientGender>patientGender, patient.birthdate, [patient.address_line], 
-        patient.address_state, patient.address_city, patient.address_postalcode, <r4:AddressUse>addressUse, 
+        aubase410:AUBasePatient|r4:FHIRError? fhirPatient = implementAuPatient(patient.id, [patient.firstName],
+        patient.lastname, patient.birthdate, <r4:PatientGender>patientGender, <r4:date>patient.date_of_arrival, [patient.address_line],
+        patient.address_state, patient.address_city, patient.address_postalcode, <r4:AddressUse>addressUse,
         patient.address_country);
 
         return fhirPatient;

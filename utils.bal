@@ -16,12 +16,37 @@ isolated function checkGender(string gender) returns r4:PatientGender? {
     return patientGender;
 }
 
-isolated function implementAuPatient(string id, string[] firstName, string lastName, r4:PatientGender gender,
-        string birthDate, string[] addressLine, string addressState, string addressCity, string addressPostalCode,
+//check address use and assign code
+isolated function checkAddressUse(string addressUse) returns r4:AddressUse? {
+    r4:AddressUse? addressUseType = "home";
+
+    if addressUse == "work" {
+        addressUseType = "work";
+    }
+    else if addressUse == "temp" {
+        addressUseType = "temp";
+    }
+    else if addressUse == "old" {
+        addressUseType = "old";
+    }
+    else if addressUse == "billing" {
+        addressUseType = "billing";
+    }
+    return addressUseType;
+}
+
+isolated function implementAuPatient(string id, string[] firstName, string lastName, string birthDate, r4:PatientGender gender,
+        r4:date dateOfArrival, string[] addressLine, string addressState, string addressCity, string addressPostalCode,
         r4:AddressUse addressUse, string country) returns aubase410:AUBasePatient|r4:FHIRError? {
 
     aubase410:AUBasePatient auPatient = {
         id: id,
+        extension: [
+            {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-patient-date-of-arrival",
+                valueDate: dateOfArrival
+            }
+        ],
         name: [
             {
                 family: lastName,
@@ -58,23 +83,4 @@ isolated function implementAuPatient(string id, string[] firstName, string lastN
 
     };
     return auPatient;
-}
-
-//check address use and assign code
-isolated function checkAddressUse(string addressUse) returns r4:AddressUse? {
-    r4:AddressUse? addressUseType = "home";
-
-    if addressUse == "work" {
-        addressUseType = "work";
-    }
-    else if addressUse == "temp" {
-        addressUseType = "temp";
-    }
-    else if addressUse == "old" {
-        addressUseType = "old";
-    }
-    else if addressUse == "billing" {
-        addressUseType = "billing";
-    }
-    return addressUseType;
 }
